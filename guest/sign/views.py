@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 # Create your views here.
 def index(request):
@@ -13,6 +13,14 @@ def login_action(request):
         username=request.POST.get('username','')
         password=request.POST.get('password','')
         if username=='admin' and password=='admin':
-            return HttpResponse('login success!')
+            response = HttpResponseRedirect('/event_manage/')
+            #response.set_cookie('user', username, 3600)#添加浏览器cookie
+            request.session['user']=username
+            return response
         else:
             return render(request,'index.html',{'error':'username or password error!'})
+
+def event_manage(request):
+    #username=request.COOKIES.get('user','')#读取浏览器cookie
+    username=request.session.get('user','')
+    return render(request,"event_manage.html")
